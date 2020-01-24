@@ -1,14 +1,17 @@
-num_particles = 10;
+num_particles = 7;
+colours = ["r", "g", "b", "c", "y", "k", "m"];
 particles = rand(num_particles, 4);
 particles(:, 2) = particles(:, 2)*200;  % x-coordinates
 particles(:, 1) = particles(:, 1)*100;  % y-coordinates
 particles(:, 3) = particles(:, 3)*10;   % placeholder x-velocity
 particles(:, 4) = particles(:, 4)*10;   % placeholder y-velocity
 
-scatter(particles(:, 2), particles(:, 1))
-axis([0 200 0 100])
+%scatter(particles(:, 2), particles(:, 1))
+%axis([0 200 0 100])
 
 for i = 0:100
+    previous_particles = particles;
+    
     % update positions
     particles(:, 1) = particles(:, 1) + particles(:, 4);
     particles(:, 2) = particles(:, 2) + particles(:, 3);
@@ -39,9 +42,14 @@ for i = 0:100
     end
     
     % refresh the plot
-    scatter(particles(:, 2), particles(:, 1))
+    %scatter(particles(:, 2), particles(:, 1))
+    for i = 1:length(particles)
+        plot([previous_particles(i, 2) particles(i, 2)], [previous_particles(i, 1) particles(i, 1)], colours(i))
+    end
     axis([0 200 0 100])
-    refreshdata
-    drawnow
+    hold on
+    pause(1)
+    %refreshdata
+    %drawnow
 end
 
