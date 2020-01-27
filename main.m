@@ -2,6 +2,9 @@
 num_particles = 7;
 colours = ["r", "g", "b", "c", "y", "k", "m"];
 vth = 1.0;      % placeholder value until I know what I'm doing
+mean_time_collision = 0.2   % measured in picoseconds
+timesteps = 1E-3            % also in picoseconds, so this will be 1 femto second timesteps
+pscat = 1 - exp(-timesteps/mean_time_collision);
 
 % particle positions
 particles = rand(num_particles, 2);
@@ -13,7 +16,7 @@ particles(:, 1) = particles(:, 1)*100;  % y-coordinates
 particles(:, 3:4) = randn(num_particles, 2) + vth;    
 
 % main time loop
-for i = 0:1000
+for i = 0:1000      % each step is a femtosecond
     previous_particles = particles;
     
     % update positions
@@ -43,6 +46,14 @@ for i = 0:1000
         particles(:, 4) = particles(:, 4) - (2 * particles(:, 4) .* y_boundary_changes_lower);
         overshoot = abs(particles(:, 1)) .* y_boundary_changes_lower;
         particles(:, 1) = particles(:, 1) + 2 * overshoot;
+    end
+    
+    % question 2 scattering logic
+    scattered = rand(num_particles, 1) < pscat;
+    if any(scattered)
+        scattered(:, 2) = scattered;
+        rethermalized_velocities(:, 1:2) = randn(num_particles, 2) .* scattered;
+        particles(:, 3:4) = particles(:, 3:4) .* ~scattered + rethermalized_velocities;
     end
     
     % plot position updates of particles, 
